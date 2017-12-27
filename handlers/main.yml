@@ -1,0 +1,4 @@
+---
+- name: restart application
+  file: path={{ project_dir }}/restart-me state=touch
+  when: service_status.stat.exists

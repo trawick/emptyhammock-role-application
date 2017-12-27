@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run as root."
+   exit 1
+fi
+
+mkdir -p "{{ certbot_dir }}/docroot"
+exec certbot certonly \
+    --webroot \
+    --webroot-path "{{ certbot_dir }}/docroot" \
+    {% for domain in certificate_domains %}-d {{ domain }} \
+    {% endfor %}--config-dir "{{ certbot_dir }}/config" \
+    --work-dir "{{ certbot_dir }}/work" \
+    --logs-dir "{{ certbot_dir }}/logs"

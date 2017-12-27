@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+WHO=`whoami`
+if test ${WHO} != {{ project_user }}; then
+    exec sudo -u {{ project_user }} $0 "$@"
+fi
+
+echo "Running as user ${WHO}..."
+cd {{ source_dir }}
+source {{ virtualenv_dir }}/bin/activate
+exec python manage.py "$@"

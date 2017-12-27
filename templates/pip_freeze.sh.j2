@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+if test -z "$1"; then
+    OUTFILE=/dev/fd/1
+else
+    OUTFILE="$1"
+fi
+
+cd {{ source_dir }}
+source {{ virtualenv_dir }}/bin/activate
+pip freeze >${OUTFILE}

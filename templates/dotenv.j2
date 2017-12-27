@@ -1,0 +1,11 @@
+DB_PASSWORD="{{ DB_PASSWORD }}"
+DJANGO_SETTINGS_MODULE="{{ project_name }}.settings.deploy"
+DOMAIN="{{ canonical_server_name }}"
+LOG_DIR="{{ log_dir }}"
+MEDIA_DIR="{{ media_dir }}"
+SECRET_KEY="{{ SECRET_KEY }}"
+SERVER_TYPE="{{ server_type }}"
+STATIC_DIR="{{ static_dir }}"
+{% for key, value in extra_dotenv.items() %}
+{{ key }}="{{ value }}"
+{% endfor %}

@@ -1,0 +1,108 @@
+---
+- name: Check if application service exists yet
+  stat: path=/etc/init.d/{{ project_name }}-app
+  register: service_status
+
+- name: Create archive directory
+  file: >
+      dest={{ project_dir }}/backups
+      owner={{ project_user }}
+      group={{ project_user }}
+      mode=0755
+      state=directory
+
+- name: Create .ssh directory
+  file: >
+      dest=/home/{{ project_user }}/.ssh
+      owner={{ project_user }}
+      group={{ project_user }}
+      mode=0700
+      state=directory
+
+- name: Copy deploy key (private)
+  copy: content="{{ SECRET_GITHUB_DEPLOY_KEY_PRIVATE }}"
+        dest=/home/{{ project_user }}/.ssh/{{ git_deploy_key }}
+        owner={{ project_user }}
+        group={{ project_user }}
+        mode=0600
+
+- git: repo=ssh://git@github.com/{{ repo_path }}.git
+       dest={{ source_dir }}
+       accept_hostkey=true
+       version={{ repo_branch|default('master') }}
+       update=yes
+       force=no
+       key_file=/home/{{ project_user }}/.ssh/{{ git_deploy_key }}
+  notify: restart application
+
+- name: Create .env
+  template: >
+       src=dotenv.j2
+       dest={{ source_dir }}/.env
+       owner={{ project_user }}
+       group={{ project_user }}
+       mode=0600
+
+- name: Create new virtualenv
+  command: "{{ virtualenv_binary }} -p {{ python_binary }} --no-site-packages {{ virtualenv_dir }} creates={{ virtualenv_dir }}"
+
+- name: Create project directories
+  file: >
+      dest="{{ item }}"
+      mode=0755
+      owner={{ project_user }}
+      group={{ project_user }}
+      state=directory
+  with_items:
+    - "{{ project_dir }}"
+    - "{{ scratch_dir }}"
+    - "{{ script_dir }}"
+    - "{{ static_dir }}"
+    - "{{ media_dir }}"
+
+- pip: virtualenv={{ virtualenv_dir }}
+       name=pip
+       version=9.0.1
+
+- pip: virtualenv={{ virtualenv_dir }}
+       requirements={{ source_dir }}/requirements/deploy.txt
+       state=present
+  notify: restart application
+
+- name: Install node modules
+  npm: path="{{ source_dir }}"
+
+- django_manage: >
+      app_path={{ source_dir }}
+      command=migrate
+      virtualenv={{ virtualenv_dir }}
+
+- stat: path="{{ source_dir }}/package.json"
+  register: package_json
+
+- name: npm run build
+  command: "npm run build"
+  args:
+    chdir: "{{ source_dir }}"
+  when: package_json.stat.exists == True
+
+- name: Django collectstatic
+  django_manage: >
+      app_path={{ source_dir }}
+      command=collectstatic
+      virtualenv={{ virtualenv_dir }}
+
+- name: Copy scripts
+  copy: src=reload_web_config.sh dest={{ script_dir }}/ owner={{ project_user }} group={{ project_user }} mode=0755
+
+- template: >
+      src="{{ item }}.j2"
+      dest="{{ script_dir }}/{{ item }}"
+      owner={{ project_user }}
+      group={{ project_user }}
+      mode=0755
+  with_items:
+    - manage.sh
+    - obtain_certificate.sh
+    - pip_freeze.sh
+    - renew_certificate.sh
