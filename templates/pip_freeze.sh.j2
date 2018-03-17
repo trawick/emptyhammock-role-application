@@ -8,4 +8,4 @@ fi
 
 cd {{ source_dir }}
 source {{ virtualenv_dir }}/bin/activate
-pip freeze >${OUTFILE}
+pip freeze --disable-pip-version-check >${OUTFILE}
