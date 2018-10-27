@@ -62,15 +62,12 @@
 
 - pip: virtualenv={{ virtualenv_dir }}
        name=pip
-       version=9.0.1
+       version=18.1
 
 - pip: virtualenv={{ virtualenv_dir }}
        requirements={{ source_dir }}/requirements/deploy.txt
        state=present
   notify: restart application
-
-- name: Install node modules
-  npm: path="{{ source_dir }}"
 
 - django_manage: >
       app_path={{ source_dir }}
@@ -79,6 +76,10 @@
 
 - stat: path="{{ source_dir }}/package.json"
   register: package_json
+
+- name: Install node modules
+  npm: path="{{ source_dir }}"
+  when: package_json.stat.exists == True
 
 - name: npm run build
   command: "npm run build"
