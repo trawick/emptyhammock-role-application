@@ -69,11 +69,6 @@
        state=present
   notify: restart application
 
-- django_manage: >
-      app_path={{ source_dir }}
-      command=migrate
-      virtualenv={{ virtualenv_dir }}
-
 - stat: path="{{ source_dir }}/package.json"
   register: package_json
 
@@ -86,12 +81,6 @@
   args:
     chdir: "{{ source_dir }}"
   when: package_json.stat.exists == True
-
-- name: Django collectstatic
-  django_manage: >
-      app_path={{ source_dir }}
-      command=collectstatic
-      virtualenv={{ virtualenv_dir }}
 
 - name: Copy scripts
   copy: src=reload_web_config.sh dest={{ script_dir }}/ owner={{ project_user }} group={{ project_user }} mode=0755
@@ -107,3 +96,15 @@
     - obtain_certificate.sh
     - pip_freeze.sh
     - renew_certificate.sh
+
+- name: Django migrate
+  django_manage: >
+      app_path={{ source_dir }}
+      command=migrate
+      virtualenv={{ virtualenv_dir }}
+
+- name: Django collectstatic
+  django_manage: >
+      app_path={{ source_dir }}
+      command=collectstatic
+      virtualenv={{ virtualenv_dir }}
