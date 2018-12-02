@@ -1,5 +1,10 @@
 # Changes and migration requirements
 
+## Version 0.0.6
+
+* Generate empty Let's Encrypt scripts if appropriate based on the value of
+  `cert_source`.
+
 ## Version 0.0.5
 
 * Install server-side scripts before running collectstatic or migrate
