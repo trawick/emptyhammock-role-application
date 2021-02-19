@@ -60,11 +60,13 @@
     - "{{ static_dir }}"
     - "{{ media_dir }}"
 
-- pip: virtualenv={{ virtualenv_dir }}
+- name: Install or upgrade pip in virtualenv
+  pip: virtualenv={{ virtualenv_dir }}
        name=pip
-       version=18.1
+       version={{ pip_version }}
 
-- pip: virtualenv={{ virtualenv_dir }}
+- name: Install requirements into virtualenv
+  pip: virtualenv={{ virtualenv_dir }}
        requirements={{ source_dir }}/requirements/deploy.txt
        state=present
   notify: restart application

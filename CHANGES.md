@@ -1,5 +1,10 @@
 # Changes and migration requirements
 
+## Version 0.0.7
+
+* Allow installed pip version to be overridden via `pip_version` variable.
+* pip version updated to 21.0.1.
+
 ## Version 0.0.6
 
 * Generate empty Let's Encrypt scripts if appropriate based on the value of
