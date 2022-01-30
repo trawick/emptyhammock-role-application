@@ -71,6 +71,10 @@
        state=present
   notify: restart application
 
+- name: Optionally remove unused Python packages from virtualenv
+  pip: virtualenv={{ virtualenv_dir }} name={{ item }} state=absent
+  with_items: "{{ python_packages_to_remove }}"
+
 - stat: path="{{ source_dir }}/package.json"
   register: package_json
 

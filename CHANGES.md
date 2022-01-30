@@ -1,5 +1,11 @@
 # Changes and migration requirements
 
+## Version 0.0.8
+
+* Optionally Set python_packages_to_remove to a list of Python packages which
+  will be removed from the virtualenv after the project requirements are
+  installed.
+
 ## Version 0.0.7
 
 * Allow installed pip version to be overridden via `pip_version` variable.
