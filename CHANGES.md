@@ -1,5 +1,9 @@
 # Changes and migration requirements
 
+## Version 0.0.9
+
+* Support Ubuntu >= 20.
+
 ## Version 0.0.8
 
 * Optionally Set python_packages_to_remove to a list of Python packages which

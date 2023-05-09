@@ -3,13 +3,20 @@
   stat: path=/etc/init.d/{{ project_name }}-app
   register: service_status
 
-- name: Create archive directory
+- name: Create project directories
   file: >
-      dest={{ project_dir }}/backups
+      dest="{{ item }}"
+      mode=0755
       owner={{ project_user }}
       group={{ project_user }}
-      mode=0755
       state=directory
+  with_items:
+    - "{{ project_dir }}"
+    - "{{ scratch_dir }}"
+    - "{{ script_dir }}"
+    - "{{ static_dir }}"
+    - "{{ media_dir }}"
+    - "{{ project_dir }}/backups"
 
 - name: Create .ssh directory
   file: >
@@ -43,22 +50,13 @@
        group={{ project_user }}
        mode=0600
 
-- name: Create new virtualenv
+- name: Create new virtualenv on old Ubuntu
   command: "{{ virtualenv_binary }} -p {{ python_binary }} --no-site-packages {{ virtualenv_dir }} creates={{ virtualenv_dir }}"
+  when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version < "20"
 
-- name: Create project directories
-  file: >
-      dest="{{ item }}"
-      mode=0755
-      owner={{ project_user }}
-      group={{ project_user }}
-      state=directory
-  with_items:
-    - "{{ project_dir }}"
-    - "{{ scratch_dir }}"
-    - "{{ script_dir }}"
-    - "{{ static_dir }}"
-    - "{{ media_dir }}"
+- name: Create new virtualenv on new Ubuntu
+  command: "{{ virtualenv_binary }} -p {{ python_binary }} {{ virtualenv_dir }} creates={{ virtualenv_dir }}"
+  when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version >= "20"
 
 - name: Install or upgrade pip in virtualenv
   pip: virtualenv={{ virtualenv_dir }}
