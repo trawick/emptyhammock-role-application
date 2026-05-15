@@ -1,12 +1,18 @@
 # Changes and migration requirements
 
+## Version 0.0.10
+
+* New boolean variable `skip_npm_actions`, defaulting to `false`, indicates
+  that `npm install` and `npm build` should be skipped.  Those steps are
+  normally run when `package.json` exists.
+
 ## Version 0.0.9
 
 * Support Ubuntu >= 20.
 
 ## Version 0.0.8
 
-* Optionally Set python_packages_to_remove to a list of Python packages which
+* Optionally Set `python_packages_to_remove` to a list of Python packages which
   will be removed from the virtualenv after the project requirements are
   installed.
 

@@ -10,3 +10,4 @@ virtualenv_binary: /usr/bin/virtualenv
 extra_dotenv: {}
 pip_version: "21.0.1"
 python_packages_to_remove: []
+skip_npm_actions: false
