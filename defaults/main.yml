@@ -7,6 +7,8 @@ python_binary: /usr/bin/python3
 repo_path: "trawick/{{ project_name }}"
 scratch_dir: "{{ project_dir }}/scratch"
 virtualenv_binary: /usr/bin/virtualenv
+# Normally a separate "virtualenv" binary is used, set in the previous variable.
+virtualenv_binary_is_python: False
 extra_dotenv: {}
 pip_version: "21.0.1"
 python_packages_to_remove: []

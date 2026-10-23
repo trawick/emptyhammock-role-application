@@ -1,5 +1,12 @@
 # Changes and migration requirements
 
+## Version 0.0.11
+
+* New boolean variable `virtualenv_binary_is_python`, defaulting to `false`,
+  indicates that `virtualenv_binary` has been set to `python -m venv ...`.
+  When set, this role will not add `-p /path/to/python` as an argument when
+  creating the virtualenv.
+
 ## Version 0.0.10
 
 * New boolean variable `skip_npm_actions`, defaulting to `false`, indicates

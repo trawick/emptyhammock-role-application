@@ -50,13 +50,17 @@
        group={{ project_user }}
        mode=0600
 
-- name: Create new virtualenv on old Ubuntu
+- name: Create new virtualenv on old Ubuntu via virtualenv
   command: "{{ virtualenv_binary }} -p {{ python_binary }} --no-site-packages {{ virtualenv_dir }} creates={{ virtualenv_dir }}"
-  when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version < "20"
+  when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version < "20" and not virtualenv_binary_is_python
 
-- name: Create new virtualenv on new Ubuntu
+- name: Create new virtualenv on new Ubuntu via virtualenv
   command: "{{ virtualenv_binary }} -p {{ python_binary }} {{ virtualenv_dir }} creates={{ virtualenv_dir }}"
-  when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version >= "20"
+  when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version >= "20" and not virtualenv_binary_is_python
+
+- name: Create new virtualenv on Ubuntu via Python binary; virtualenv_binary should be set to "python..."
+  command: "{{ virtualenv_binary }} {{ virtualenv_dir }} creates={{ virtualenv_dir }}"
+  when: ansible_distribution == "Ubuntu" and virtualenv_binary_is_python
 
 - name: Install or upgrade pip in virtualenv
   pip: virtualenv={{ virtualenv_dir }}
